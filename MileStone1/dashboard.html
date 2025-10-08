@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+<body>
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h4>Crowd Count</h4><br>
+      <a href="{{  url_for('dashboard') }}">📊 Dashboard</a>
+
+      <a href="#"> 🎥Video Analytics</a>
+      <a href="#"> 👤 Profile</a>
+      <a href="{{ url_for('logout') }}"> 🔓 Logout</a>
+    </div>
+
+    <!-- Content -->
+    <div class="content flex-grow-1 p-4">
+      <h3>Welcome, {{ username }} 👋</h3><br> 
+      <hr>
+      <h5>Dashboard Overview 📊</h5>
+      <ul class="list-group">
+        <li class="list-group-item">📈 Crowd Density Analysis</li>
+        <li class="list-group-item">🚦 Traffic Flow Tracking</li>
+        <li class="list-group-item">👥 People Counting</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

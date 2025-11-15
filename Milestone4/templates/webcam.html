@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block header %}
+  <h2>Live Webcam Analysis (Tracking & Counting)</h2>
+{% endblock %}
+
+{% block content %}
+  <div style="margin-bottom:22px;">
+    <button id="stopButton">Stop</button>
+    <button id="generateChartButton" disabled>Generate Chart</button>
+    <button id="downloadCSV" disabled style="padding: 10px 18px; background: #1976d2; color: white; border: none; border-radius: 4px; font-size: 16px;">Download Counts CSV</button>
+    <button id="countButton" disabled>Count</button>
+  </div>
+
+  <img id="webcam_stream" src="{{ url_for('webcam_feed') }}" width="80%" />
+  <canvas id="freezeCanvas" style="display:none;" width="640" height="360"></canvas>
+
+  <div id="zoneCounts" style="margin-top: 20px; font-weight: bold; font-size: 18px;"></div>
+
+  <div id="charts" style="margin-top:20px;">
+    <h3>Zone Population Charts & Heatmap</h3>
+    <img id="barChart" style="width:500px; margin-bottom:20px;" />
+    <img id="lineChart" style="width:500px; margin-bottom:20px;" />
+    <img id="heatmap" style="width:500px; margin-bottom:20px;" />
+  </div>
+
+  <script>
+    const stopButton = document.getElementById('stopButton');
+    const webcamStream = document.getElementById('webcam_stream');
+    const generateChartButton = document.getElementById('generateChartButton');
+    const downloadCSVButton = document.getElementById('downloadCSV');
+    const countButton = document.getElementById('countButton');
+    const zoneCountsDiv = document.getElementById('zoneCounts');
+
+    let streamStopped = false;
+
+stopButton.onclick = function() {
+  fetch('/stop_webcam')
+    .then(() => {
+      // Now blank canvas etc.
+      streamStopped = true;
+      generateChartButton.disabled = false;
+      downloadCSVButton.disabled = false;
+      countButton.disabled = false;
+      stopButton.disabled = true;
+      let lastFrame = new Image();
+      lastFrame.crossOrigin = "Anonymous";
+      lastFrame.onload = function() {
+        let freezeCanvas = document.getElementById('freezeCanvas');
+        freezeCanvas.width = lastFrame.width;
+        freezeCanvas.height = lastFrame.height;
+        freezeCanvas.style.display = "";
+        freezeCanvas.getContext("2d").drawImage(lastFrame, 0, 0);
+        webcamStream.style.display = "none";
+      };
+      lastFrame.src = webcamStream.src;
+      webcamStream.src = "";
+    });
+};
+
+    generateChartButton.onclick = function() {
+      fetch('/zone_population_charts')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('barChart').src = 'data:image/png;base64,' + data.bar_chart;
+          document.getElementById('lineChart').src = 'data:image/png;base64,' + data.line_chart;
+          document.getElementById('heatmap').src = '/static/heatmap.png';
+        });
+    };
+
+    downloadCSVButton.onclick = function() {
+      window.location.href = "/download_zone_counts_csv";
+    };
+
+    countButton.onclick = function() {
+      fetch('/get_zone_counts?video_path=webcam')
+        .then(response => response.json())
+        .then(data => {
+          zoneCountsDiv.innerHTML = `
+            <p>Zone 1 Count: ${data.zone1_count} people</p>
+            <p>Zone 2 Count: ${data.zone2_count} people</p>
+          `;
+        })
+        .catch(() => {
+          zoneCountsDiv.innerHTML = '<p>Error fetching zone counts.</p>';
+        });
+    };
+  </script>
+{% endblock %}
+

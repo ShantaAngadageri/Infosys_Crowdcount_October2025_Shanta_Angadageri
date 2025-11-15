@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block header %}
+  <h1>Hi {{ username }},,</h1>
+  <h2>Welcome to Crowd Count</h2>
+{% endblock %}
+
+{% block content %}
+  <style>
+    .content {
+      background: linear-gradient(120deg,#e9eafc 0,#e6f1fa 100%) !important;
+      /* or use background-color: #e9eafc; for solid */
+      min-height: 100vh;
+      border-radius: 18px;
+      /* add other styling if needed */
+    }
+  </style>
+  <!-- Rest of your content -->
+{% endblock %}

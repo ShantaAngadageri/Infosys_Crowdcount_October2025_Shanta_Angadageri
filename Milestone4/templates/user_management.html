@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block header %}
+  <h1>User Management</h1><br>
+{% endblock %}
+{% block content %}
+  <table id="userTable" style="border-collapse: collapse; min-width: 450px;">
+    <thead>
+      <tr>
+        <th style="padding:10px 20px">User</th>
+        <th style="padding:10px 20px">Role</th>
+        <th style="padding:10px 20px">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Filled by JS -->
+    </tbody>
+  </table>
+  <script src="{{ url_for('static', filename='user.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block header %}
+  <h2>Image Analysis (Counting & Visualization)</h2>
+{% endblock %}
+
+{% block content %}
+  <!-- Upload form -->
+  <form method="POST" enctype="multipart/form-data" action="{{ url_for('image_analysis') }}">
+    <input type="file" name="image" accept="image/*" required />
+    <button type="submit" name="view_image">Upload Image</button>
+    {% if stored_filename %}
+      <input type="hidden" name="stored_filename" value="{{ stored_filename }}" />
+    {% endif %}
+  </form>
+
+  <!-- Analyze button -->
+  <form method="POST" action="{{ url_for('image_analysis') }}" style="margin-top:10px;">
+    {% if stored_filename %}
+      <input type="hidden" name="stored_filename" value="{{ stored_filename }}" />
+      <button type="submit" name="analyse_image">Analyze Crowd</button>
+    {% else %}
+      <button type="button" disabled style="opacity:0.5;">Analyze Crowd</button>
+    {% endif %}
+  </form>
+
+  <!-- Show selected image -->
+  {% if image_url %}
+    <h4>Selected Image:</h4>
+    <img id="image_display" src="{{ url_for('static', filename=image_url) }}" style="max-width:80%;" />
+  {% endif %}
+
+  <!-- Show analyzed output -->
+  {% if output_url %}
+    <h4>Analysis Output:</h4>
+    <img id="analysis_output" src="{{ url_for('static', filename=output_url) }}" style="max-width:80%;" />
+    <h3 style="margin-top:10px; color: rgb(29, 94, 29);">Detected People: {{ count }}</h3>
+  {% endif %}
+
+  <hr/>
+
+  <!-- Buttons arranged side by side -->
+  <div style="margin-bottom:22px;">
+    <button id="generateChartButton" style="padding:10px 18px; background:#1976d2; color:white; border:none; border-radius:4px; font-size:16px; margin-right:10px;">
+      Generate Chart
+    </button>
+    <button id="downloadCSV" style="padding:10px 18px; background:#1976d2; color:white; border:none; border-radius:4px; font-size:16px;">
+      Download Counts CSV
+    </button>
+  </div>
+
+  <div id="charts" style="margin-top:20px;">
+    <h3>Zone Population Charts & Heatmap</h3>
+    <img id="barChart" style="width:500px; margin-bottom:20px;" />
+    <img id="lineChart" style="width:500px; margin-bottom:20px;" />
+    <img id="heatmap" style="width:500px; margin-bottom:20px; display:none;" />
+  </div>
+
+  <script>
+    const generateChartButton = document.getElementById('generateChartButton');
+    const downloadCSVButton = document.getElementById('downloadCSV');
+    const heatmap = document.getElementById('heatmap');
+
+    generateChartButton.onclick = function() {
+      fetch('/zone_population_charts')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('barChart').src = 'data:image/png;base64,' + data.bar_chart;
+          document.getElementById('lineChart').src = 'data:image/png;base64,' + data.line_chart;
+
+          heatmap.style.display = '';
+          heatmap.src = '/static/heatmap.png?t=' + new Date().getTime();  // cache bust heatmap
+        });
+    };
+
+    downloadCSVButton.onclick = function() {
+      window.location.href = "/download_zone_counts_csv";
+    };
+
+  </script>
+{% endblock %}

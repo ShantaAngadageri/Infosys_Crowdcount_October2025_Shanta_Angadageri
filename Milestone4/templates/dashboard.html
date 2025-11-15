@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crowd Count Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}" />
+</head>
+<body>
+  <div class="dashboard">
+    <div class="sidebar">
+      <h3 style="color:#ffcc00; font-weight:bold;">Crowd Count</h3>
+      <a href="{{ url_for('dashboard', mode='upload') }}" {% if mode == 'upload' %}class="active"{% endif %}>Dashboard</a>
+      <a href="{{ url_for('dashboard', mode='upload') }}" {% if mode == 'upload' %}class="active"{% endif %}>Image Analyze</a>
+      <a href="{{ url_for('dashboard', mode='video') }}" {% if mode == 'video' %}class="active"{% endif %}>Video Analysis</a>
+      <a href="{{ url_for('dashboard', mode='webcam') }}" {% if mode == 'webcam' %}class="active"{% endif %}>Webcam</a>
+      <a href="{{ url_for('logout') }}" class="logout">Logout</a>
+    </div>
+    <div class="content">
+      <h1>Welcome 👋 , {{ username }}</h1>
+
+      {% if mode == 'upload' %}
+        <form id="viewForm" method="POST" enctype="multipart/form-data" action="{{ url_for('dashboard', mode='upload') }}">
+          <label for="image">Select image:</label><br />
+          <input type="file" name="image" id="imageInput" accept="image/*" /><br /><br />
+          <button type="submit" name="view_image">View Image</button>
+          {% if stored_filename %}
+            <input type="hidden" name="stored_filename" value="{{ stored_filename }}" />
+          {% endif %}
+        </form><br />
+
+        <form id="analyzeForm" method="POST" action="{{ url_for('dashboard', mode='upload') }}">
+          {% if stored_filename %}
+            <input type="hidden" name="stored_filename" value="{{ stored_filename }}" />
+            <button type="submit" name="analyse_image">Analyze Crowd</button>
+          {% else %}
+            <button type="button" disabled>Analyze Crowd</button>
+          {% endif %}
+        </form>
+
+        {% if image_url %}
+          <h4>Selected Image:</h4>
+          <img src="{{ url_for('static', filename=image_url) }}" width="60%" />
+        {% endif %}
+
+        {% if output_url %}
+          <img src="{{ url_for('static', filename=output_url) }}" width="70%" />
+          <h3 style="margin-top:10px;">Detected People: {{ count }}</h3>
+        {% endif %}
+      {% endif %}
+
+{% if mode == 'video' %}
+  <div class="video-analysis-section">
+    <h3>Live Video Analysis (Tracking & Counting)</h3>
+    <form method="POST" enctype="multipart/form-data" action="{{ url_for('launch_video_stream') }}">
+      <input type="file" name="video" accept="video/*" required />
+      <button type="submit">Start Video Analysis</button>
+    </form>
+    {% if video_path %}
+      <h4>Streaming Analyzed Video:</h4>
+      <img id="video_stream" src="{{ url_for('video_analysis_stream') }}?video_path={{ video_path }}" width="80%" />
+      <canvas id="freezeCanvas" style="display:none;" width="640" height="360"></canvas>
+      <br />
+      <button id="stopButton">Stop</button>
+      <h3 id="peopleCount" style="margin-top:10px; color: limegreen;"></h3>
+      <script>
+        const stopButton = document.getElementById('stopButton');
+        const videoStream = document.getElementById('video_stream');
+        const peopleCountEl = document.getElementById('peopleCount');
+        const freezeCanvas = document.getElementById('freezeCanvas');
+        let streamStopped = false;
+
+        stopButton.onclick = function() {
+          if(streamStopped) return; // prevent duplicate stop
+          // Create a temporary image to load the last frame
+          let lastFrame = new Image();
+          lastFrame.crossOrigin = "Anonymous";
+          lastFrame.onload = function() {
+            freezeCanvas.width = lastFrame.width;
+            freezeCanvas.height = lastFrame.height;
+            freezeCanvas.style.display = "";
+            freezeCanvas.getContext("2d").drawImage(lastFrame, 0, 0);
+            videoStream.style.display = "none";
+          };
+          lastFrame.src = videoStream.src;
+
+          // Actually stop the MJPEG stream
+          videoStream.src = "";
+          streamStopped = true;
+
+          // Fetch the final count from backend
+          fetch('/stop_video?video_path={{ video_path }}')
+            .then(response => response.json())
+            .then(data => {
+              peopleCountEl.textContent = "Total Unique People Detected: " + data.count;
+            });
+        }
+      </script>
+    {% endif %}
+  </div>
+{% endif %}
+
+
+      {% if mode == 'webcam' %}
+        <h3>Live Webcam Crowd Detection</h3>
+        <img src="{{ url_for('webcam_feed') }}" width="80%" />
+      {% endif %}
+    </div>
+  </div>
+
+  <script>
+    const imageInput = document.getElementById('imageInput');
+    if(imageInput){
+      imageInput.addEventListener('change', () => {
+        const fileName = imageInput.files.length ? imageInput.files[0].name : '';
+        if(fileName){
+          console.log('Selected file: ' + fileName);
+        }
+      });
+    }
+  </script>
+</body>
+</html>

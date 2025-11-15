@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block header %}
+  <h2>Video Analysis (Tracking & Counting)</h2>
+{% endblock %}
+
+{% block content %}
+
+
+
+  <!-- Upload form, always visible -->
+  <form method="POST" enctype="multipart/form-data" action="{{ url_for('launch_video_stream') }}">
+    <input type="file" name="video" accept="video/*" required />
+    <button type="submit">Start Video Analysis</button>
+  </form>
+
+
+  <!-- The controls are always visible, but some may be disabled -->
+  <div style="margin-bottom:22px;">
+    <button id="stopButton" >Stop</button>
+    <button id="generateChartButton" >Generate Chart</button>
+    <button id="downloadCSV"  style="padding: 10px 18px; background: #1976d2; color: white; border: none; border-radius: 4px; font-size: 16px;">Download Counts CSV</button>
+  </div>
+
+
+
+  {% if video_path %}
+    <h4>Streaming Analyzed Video:</h4>
+    <img id="video_stream" src="{{ url_for('video_analysis_stream') }}?video_path={{ video_path }}" width="80%" />
+    <canvas id="freezeCanvas" style="display:none;" width="640" height="360"></canvas>
+    <h3 id="peopleCount" style="margin-top:10px; color: limegreen;"></h3>
+
+    <div id="charts" style="margin-top:20px;">
+      <h3>Zone Population Charts & Heatmap</h3>
+      <img id="barChart" style="width:500px; margin-bottom:20px;" />
+      <img id="lineChart" style="width:500px; margin-bottom:20px;" />
+      <img id="heatmap" style="width:500px; margin-bottom:20px;" />
+    </div>
+
+    <script>
+      const stopButton = document.getElementById('stopButton');
+      const videoStream = document.getElementById('video_stream');
+      const peopleCountEl = document.getElementById('peopleCount');
+      const generateChartButton = document.getElementById('generateChartButton');
+      const downloadCSVButton = document.getElementById('downloadCSV');
+      let streamStopped = false;
+
+      stopButton.onclick = function() {
+        if(streamStopped) return;
+        let lastFrame = new Image();
+        lastFrame.crossOrigin = "Anonymous";
+        lastFrame.onload = function() {
+          let freezeCanvas = document.getElementById('freezeCanvas');
+          freezeCanvas.width = lastFrame.width;
+          freezeCanvas.height = lastFrame.height;
+          freezeCanvas.style.display = "";
+          freezeCanvas.getContext("2d").drawImage(lastFrame, 0, 0);
+          videoStream.style.display = "none";
+        };
+        lastFrame.src = videoStream.src;
+        videoStream.src = "";
+        streamStopped = true;
+        generateChartButton.disabled = false;
+      }
+
+      generateChartButton.onclick = function() {
+        fetch('/zone_population_charts')
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById('barChart').src = 'data:image/png;base64,' + data.bar_chart;
+            document.getElementById('lineChart').src = 'data:image/png;base64,' + data.line_chart;
+            document.getElementById('heatmap').src = '/static/heatmap.png';
+          });
+      }
+
+      downloadCSVButton.onclick = function() {
+        window.location.href = "/download_zone_counts_csv";
+      }
+    </script>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crowd Count Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}" />
+</head>
+<body>
+  <div class="dashboard">
+    <div class="sidebar">
+      <h2 style="color:#ffcc00; font-weight:bold;">Crowd Count</h2>
+      <hr />
+      <a href="{{ url_for('dashboard') }}" {% if active_page == 'dashboard' %}class="active"{% endif %}>Dashboard</a>
+      <a href="{{ url_for('dashboard', mode='upload') }}" {% if active_page == 'image' %}class="active"{% endif %}>Image Analyze</a>
+      <a href="{{ url_for('dashboard', mode='video') }}" {% if active_page == 'video' %}class="active"{% endif %}>Video Analysis</a>
+      <a href="{{ url_for('dashboard', mode='webcam') }}" {% if active_page == 'webcam' %}class="active"{% endif %}>Webcam</a>
+      <a href="{{ url_for('logout') }}" class="logout">Logout</a>
+    </div>
+    <div class="content">
+      {% block header %}
+      {% endblock %}
+      {% block content %}
+      {% endblock %}
+    </div>
+  </div>
+</body>
+</html>

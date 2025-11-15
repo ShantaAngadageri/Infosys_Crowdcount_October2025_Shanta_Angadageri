@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block header %}
+  <h2>Image Analysis</h2>
+{% endblock %}
+
+{% block content %}
+  <form id="viewForm" method="POST" enctype="multipart/form-data" action="{{ url_for('image_analysis') }}">
+    <label for="image">Select image:</label><br />
+    <input type="file" name="image" id="imageInput" accept="image/*" /><br /><br />
+    <button type="submit" name="view_image">View Image</button>
+    {% if stored_filename %}
+      <input type="hidden" name="stored_filename" value="{{ stored_filename }}" />
+    {% endif %}
+  </form><br />
+
+  <form id="analyzeForm" method="POST" action="{{ url_for('image_analysis') }}">
+    {% if stored_filename %}
+      <input type="hidden" name="stored_filename" value="{{ stored_filename }}" />
+      <button type="submit" name="analyse_image">Analyze Crowd</button>
+    {% else %}
+      <button type="button" disabled>Analyze Crowd</button>
+    {% endif %}
+  </form>
+
+  {% if image_url %}
+    <h4>Selected Image:</h4>
+    <img src="{{ url_for('static', filename=image_url) }}" width="60%" />
+  {% endif %}
+
+  {% if output_url %}
+    <img src="{{ url_for('static', filename=output_url) }}" width="70%" />
+    <h3 style="margin-top:10px;">Detected People: {{ count }}</h3>
+  {% endif %}
+{% endblock %}

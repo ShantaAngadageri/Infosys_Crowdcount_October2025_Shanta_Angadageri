@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block header %}
+  <h2>Live Webcam Crowd Detection</h2>
+{% endblock %}
+
+{% block content %}
+  <img src="{{ url_for('webcam_feed') }}" width="80%" />
+{% endblock %}

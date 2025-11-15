@@ -1,0 +1,88 @@
+body {
+  background-color: #f3f6fb;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  height: 100vh;
+  overflow: hidden; /* Prevent full-page scroll, scroll only on .content */
+}
+
+.dashboard {
+  display: flex;
+  height: 100vh;
+}
+
+/* Fixed sidebar */
+.sidebar {
+  background: rgb(36, 36, 44);
+  color: white;
+  width: 200px;
+  padding: 20px;
+  position: fixed;    /* Make sidebar constant/fixed */
+  top: 0;
+  left: 0;
+  height: 100vh;      /* Fill viewport height */
+  overflow: auto;     /* Allow sidebar internal scroll if needed */
+  z-index: 10;
+}
+
+.sidebar a {
+  color: white;
+  text-decoration: none;
+  display: block;
+  margin: 10px 0;
+  font-size: 20px;        /* Make sidebar links bigger */
+  padding: 12px 0;
+}
+
+.sidebar .logout {
+  color: #ff4444;
+  font-size: 20px;        /* Make logout link bigger */
+  padding: 12px 0;
+}
+
+/* Main content is scrollable */
+.content {
+  margin-left: 220px; /* Prevent content under sidebar */
+  flex: 1;
+  padding: 40px;
+  background: #f5f5f5;
+  height: 100vh;
+  overflow-y: auto;    /* Vertical scroll only here */
+  color: #222;
+  box-sizing: border-box;
+  position: relative;  /* Ensure child elements like count text layer above */
+}
+
+button {
+  background-color: #4CAF50; /* Green background */
+  color: white; /* White text */
+  padding: 10px 20px; /* Padding for size */
+  border: none;
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  margin-bottom: 12px;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+button:disabled, button[disabled] {
+  background-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
+}
+
+/* Highlight the detected count */
+h3 {
+  color: #0b1264;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+
+
+

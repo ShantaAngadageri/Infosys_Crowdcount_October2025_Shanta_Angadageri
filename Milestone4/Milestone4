@@ -1,1 +1,26 @@
-
+📁 CrowdCount-App/
+│
+├── 📁 static/
+│   ├── 📁 uploads/              # Uploaded images & videos (input)
+│   ├── 📁 outputs/              # Processed images (output)
+│   ├── heatmap.png              # Auto-generated heatmap
+│   └── 📁 css/                  # Stylesheets (optional)
+│   └── 📁 js/                   # JavaScript files (optional)
+│
+├── 📁 templates/
+│   ├── login.html
+│   ├── index.html               # Dashboard
+│   ├── registration.html
+│   ├── user_management.html
+│   ├── image_analysis.html
+│   ├── video_analysis.html
+│   ├── webcam.html
+│
+│   ├── crowd_detect.py          # Image-based crowd detection logic
+│   ├── video_analysis.py        # Frame generator, video processing, unique counts
+│   ├── visualization.py         # Charts, heatmap generation
+│
+├── app.py                       # Main Flask application (Your entire code)
+│
+├── LoginData.db                 # SQLite database for login/users
+│

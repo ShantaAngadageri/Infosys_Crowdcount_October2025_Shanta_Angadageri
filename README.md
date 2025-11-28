@@ -1,6 +1,22 @@
 Infosys_Crowdcount_October2025
 
 
+
+
+
+
+
+
+
+### 1️⃣ Clone the Repository
+```bash
+git clone https://github.com/your-username/crowd-count-app.git
+cd crowd-count-app
+
+
+
+
+
 CrowdCount-App/
 │
 ├── static/
@@ -25,14 +41,6 @@ CrowdCount-App/
 ├── LoginData.db # SQLite database
 
 
-
-
-
-
-### 1️⃣ Clone the Repository
-```bash
-git clone https://github.com/your-username/crowd-count-app.git
-cd crowd-count-app
 
 
 Run Flask App

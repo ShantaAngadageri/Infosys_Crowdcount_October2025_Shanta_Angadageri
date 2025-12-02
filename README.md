@@ -10,8 +10,8 @@ Infosys_Crowdcount_October2025
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/your-username/crowd-count-app.git
-cd crowd-count-app
+git clone https://github.com/<your-username>/Infosys_Crowdcount_October2025_Shanta_Angadageri.git
+cd Infosys_Crowdcount_October2025_Shanta_Angadageri
 
 
 
